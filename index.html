@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070d18">
+  <meta name="description" content="Industrial MIOT Home Automation Dashboard for remote ESP8266 control via EMQX Cloud MQTT over WebSockets.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23101c30'/%3E%3Ccircle cx='12' cy='12' r='5' fill='%233b82f6'/%3E%3C/svg%3E">
+  <title>MIOT | Home Automation Dashboard</title>
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="shell">
+    <!-- Top Header & Brand -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <!-- Microcontroller / Chip SVG Icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <rect x="9" y="9" width="6" height="6"></rect>
+            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>MIOT Home Automation</h1>
+          <p class="subtitle">Cloud telemetry and remote actuator control for ESP8266</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-badges">
+          <!-- MQTT Broker Status -->
+          <div class="connection-badge" aria-live="polite">
+            <span class="label">MQTT</span>
+            <span id="connectionDot" class="dot" aria-hidden="true"></span>
+            <span id="connectionText">Disconnected</span>
+          </div>
+
+          <!-- ESP8266 Heartbeat Badge -->
+          <div class="connection-badge" aria-live="polite">
+            <span class="label">Node</span>
+            <span id="nodeHeartbeatDot" class="dot" aria-hidden="true"></span>
+            <span id="nodeHeartbeatText">Offline</span>
+          </div>
+        </div>
+
+        <button id="openSettingsBtn" class="outline small" type="button" aria-haspopup="dialog" aria-expanded="false" title="Configure broker credentials">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Settings
+        </button>
+      </div>
+    </header>
+
+    <!-- Configuration Setup Warning Banner -->
+    <div id="configWarning" class="banner banner-warning show" role="alert">
+      <div class="banner-content">
+        <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <div>
+          <strong>Setup required:</strong> EMQX MQTT username and password are not set. Configure your restricted credentials in the Settings dialog to start live telemetry.
+        </div>
+      </div>
+      <div class="banner-actions">
+        <button id="bannerConfigBtn" class="small secondary" type="button">Configure Credentials</button>
+      </div>
+    </div>
+
+    <!-- Quick Telemetry Overview (4 Metric Cards) -->
+    <section class="overview" aria-label="Key Device Metrics">
+      <div class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Device Status</span>
+          <div class="metric-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+              <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+              <line x1="12" y1="20" x2="12.01" y2="20"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value" id="deviceConnection">Unknown</div>
+        <div class="metric-detail" id="lastSeen">Waiting for device status</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Lighting</span>
+          <div class="metric-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value" id="lightingMetric">Unknown</div>
+        <div class="metric-detail" id="environmentMetric">Environment unknown</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Control Mode</span>
+          <div class="metric-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value" id="modeMetric">Unknown</div>
+        <div class="metric-detail">Automatic or manual control</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Motor</span>
+          <div class="metric-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value" id="motorMetric">Unknown</div>
+        <div class="metric-detail" id="motorDetail">Waiting for device status</div>
+      </div>
+    </section>
+
+    <!-- Main Controls & Device Details Grid -->
+    <section class="layout">
+      
+      <!-- 1. LED Control Card -->
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a6 6 0 0 0-6 6c0 2.97 1.8 5.43 4.4 6.32V18a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2v-3.68C16.2 13.43 18 10.97 18 8a6 6 0 0 0-6-6Z"></path>
+                <path d="M9 22h6"></path>
+              </svg>
+            </div>
+            <div>
+              <h2>LED Control</h2>
+              <p class="card-description">Control built-in (LED_BUILTIN) and external (D2) LEDs.</p>
+            </div>
+          </div>
+          <span id="ledPill" class="pill">Unknown</span>
+        </div>
+
+        <!-- Visual LED Indicator Widget -->
+        <div class="widget-display">
+          <div class="led-indicator-wrap">
+            <div id="ledBulbVisual" class="led-bulb-graphic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+                <path d="M12 2a6 6 0 0 0-6 6c0 2.97 1.8 5.43 4.4 6.32V18a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2v-3.68C16.2 13.43 18 10.97 18 8a6 6 0 0 0-6-6Z"></path>
+                <path d="M9 22h6"></path>
+              </svg>
+            </div>
+            <div class="led-state-text">
+              <strong id="ledDisplayHeader">LEDs Inactive</strong>
+              <span>Active LOW on NodeMCU, Active HIGH on D2</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-line">
+          <span class="status-label">Current LED state</span>
+          <span id="ledStatus" class="status-value">Waiting for status</span>
+        </div>
+
+        <div class="button-row button-group-stretch" style="margin-top: 18px;">
+          <button id="ledOnBtn" class="success" data-command="led/on" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+            </svg>
+            Turn LEDs on
+          </button>
+          <button id="ledOffBtn" class="secondary" data-command="led/off" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            Turn LEDs off
+          </button>
+        </div>
+      </article>
+
+      <!-- 2. Light Sensor and Mode Card -->
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="m6.34 17.66-1.41 1.41"></path>
+                <path d="m19.07 4.93-1.41 1.41"></path>
+              </svg>
+            </div>
+            <div>
+              <h2>Light Sensor and Mode</h2>
+              <p class="card-description">LDR sensor (D5) telemetry and lighting behavior automation.</p>
+            </div>
+          </div>
+          <span id="modePill" class="pill">Unknown</span>
+        </div>
+
+        <!-- Visual Sensor Display Widget -->
+        <div class="widget-display">
+          <div class="sensor-indicator-wrap">
+            <div id="sensorVisualBox" class="sensor-icon-box" aria-hidden="true">
+              <svg id="sensorDarkIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+              </svg>
+            </div>
+            <div>
+              <strong id="sensorReadingLabel">Environment: Unknown</strong>
+              <div style="font-size:12px; color:var(--text-muted);">LDR digital pin D5 (HIGH = Dark, LOW = Bright)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-line">
+          <span class="status-label">Environment</span>
+          <span id="lightStatus" class="status-value">Waiting for status</span>
+        </div>
+
+        <!-- Automatic Lighting Switch -->
+        <div class="switch-line">
+          <div class="switch-copy">
+            <strong>Automatic lighting mode</strong>
+            <span>DARK activates LEDs; BRIGHT shuts LEDs off automatically.</span>
+          </div>
+          <label class="switch" aria-label="Automatic lighting toggle">
+            <input id="autoSwitch" type="checkbox">
+            <span class="slider" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <div class="button-row button-group-stretch">
+          <button id="autoBtn" class="success" data-command="mode/auto" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Enable auto
+          </button>
+          <button id="manualBtn" class="secondary" data-command="mode/manual" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+              <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
+              <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+              <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
+            </svg>
+            Enable manual
+          </button>
+        </div>
+      </article>
+
+      <!-- 3. DC Motor Card -->
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                <circle cx="12" cy="12" r="4"></circle>
+              </svg>
+            </div>
+            <div>
+              <h2>DC Motor</h2>
+              <p class="card-description">L298N driver control (ENA: D6, IN1: D7, IN2: D1).</p>
+            </div>
+          </div>
+          <span id="motorPill" class="pill">Unknown</span>
+        </div>
+
+        <!-- Motor Rotor Visual Widget -->
+        <div class="widget-display">
+          <div class="motor-indicator-wrap">
+            <div id="motorRotorVisual" class="motor-rotor" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+              </svg>
+            </div>
+            <div class="motor-telemetry-text">
+              <strong id="motorStateDisplay">Motor Stopped</strong>
+              <span id="motorSpeedTelemetry">Speed: 700 / 1023 (PWM D6)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-line">
+          <span class="status-label">Motor state</span>
+          <span id="motorStatus" class="status-value">Waiting for status</span>
+        </div>
+
+        <div class="status-line">
+          <span class="status-label">Direction</span>
+          <span id="directionStatus" class="status-value">Unknown</span>
+        </div>
+
+        <!-- Motor Power Controls -->
+        <div class="button-row button-group-stretch" style="margin-top: 16px;">
+          <button id="motorOnBtn" class="success" data-command="motor/on" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Start motor
+          </button>
+          <button id="motorOffBtn" class="danger" data-command="motor/off" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="6" y="6" width="12" height="12"></rect>
+            </svg>
+            Stop motor
+          </button>
+        </div>
+
+        <!-- Motor Direction Controls -->
+        <div class="button-row button-group-stretch" style="margin-top: 10px;">
+          <button id="forwardBtn" class="secondary" data-command="motor/forward" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="13 17 18 12 13 7"></polyline>
+              <polyline points="6 17 11 12 6 7"></polyline>
+            </svg>
+            Forward
+          </button>
+          <button id="reverseBtn" class="secondary" data-command="motor/reverse" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="11 17 6 12 11 7"></polyline>
+              <polyline points="18 17 13 12 18 7"></polyline>
+            </svg>
+            Reverse
+          </button>
+        </div>
+
+        <!-- Motor Speed Slider & Presets -->
+        <div class="range-box">
+          <div class="range-header">
+            <label for="speedSlider">PWM Motor Speed</label>
+            <span class="range-number"><span id="speedValue">700</span> / 1023</span>
+          </div>
+          <input id="speedSlider" type="range" min="0" max="1023" step="1" value="700" aria-label="Motor Speed Range 0 to 1023">
+          <div class="range-scale">
+            <span>0 · Stop</span>
+            <span>512 · 50%</span>
+            <span>1023 · Max</span>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="preset-row">
+            <button type="button" class="preset-btn" data-preset="0">0 (0%)</button>
+            <button type="button" class="preset-btn" data-preset="256">256 (25%)</button>
+            <button type="button" class="preset-btn" data-preset="512">512 (50%)</button>
+            <button type="button" class="preset-btn" data-preset="768">768 (75%)</button>
+            <button type="button" class="preset-btn" data-preset="1023">1023 (100%)</button>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="applySpeedBtn" class="outline" type="button" style="width: 100%;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Apply speed
+          </button>
+        </div>
+
+        <p class="notice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          Keep the motor disconnected until the driver, external motor supply, and shared ground are verified.
+        </p>
+      </article>
+
+      <!-- 4. Device Information Card -->
+      <article class="card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+            </div>
+            <div>
+              <h2>Device Information</h2>
+              <p class="card-description">Live telemetry and network parameters reported by ESP8266.</p>
+            </div>
+          </div>
+          <span id="wifiPill" class="pill">Unknown</span>
+        </div>
+
+        <div class="device-grid">
+          <div class="status-line">
+            <span class="status-label">Device Type</span>
+            <span id="deviceTypeStatus" class="status-value">ESP8266 NodeMCU</span>
+          </div>
+          <div class="status-line">
+            <span class="status-label">Wi-Fi Status</span>
+            <span id="wifiStatus" class="status-value">Unknown</span>
+          </div>
+          <div class="status-line">
+            <span class="status-label">Network Name</span>
+            <span id="ssidStatus" class="status-value">Unknown</span>
+          </div>
+          <div class="status-line">
+            <span class="status-label">Local IP</span>
+            <span id="ipStatus" class="status-value">Unknown</span>
+          </div>
+          <div class="status-line">
+            <span class="status-label">MQTT Transport</span>
+            <span id="mqttStatus" class="status-value">Unknown</span>
+          </div>
+          <div class="status-line">
+            <span class="status-label">Last Heartbeat</span>
+            <span id="lastHeartbeatStatus" class="status-value">Never</span>
+          </div>
+        </div>
+
+        <div class="button-row button-group-stretch" style="margin-top: 16px;">
+          <button id="refreshBtn" class="outline" type="button" title="Request an immediate status packet from ESP8266">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+              <path d="M21 3v5h-5"></path>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+              <path d="M8 16H3v5"></path>
+            </svg>
+            Request status
+          </button>
+          <button id="reconnectBtn" class="secondary" type="button" title="Disconnect and restart MQTT connection">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Reconnect MQTT
+          </button>
+        </div>
+      </article>
+
+      <!-- 5. Activity Log (Full Width) -->
+      <article class="card log-card">
+        <div class="card-head" style="margin-bottom: 12px;">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+            </div>
+            <div>
+              <h2>Activity Log</h2>
+              <p class="card-description">Chronological stream of commands, broker events, and incoming status packets.</p>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="copyLogBtn" class="outline small" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy log
+            </button>
+            <button id="clearLogBtn" class="outline small" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Clear log
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter tabs for log -->
+        <div class="log-toolbar">
+          <div class="log-filters" role="group" aria-label="Log category filter">
+            <button type="button" class="filter-btn active" data-filter="all">All</button>
+            <button type="button" class="filter-btn" data-filter="cmd">Commands</button>
+            <button type="button" class="filter-btn" data-filter="status">Status</button>
+            <button type="button" class="filter-btn" data-filter="conn">Connection</button>
+          </div>
+          <span id="logCounter" style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">0 events recorded</span>
+        </div>
+
+        <div id="activityLog" class="activity" aria-live="polite">Dashboard initialized. MQTT connection has not started.</div>
+      </article>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div>MIOT Home Automation &middot; MQTT communication over secure WebSockets (WSS Port 8084)</div>
+      <div style="margin-top: 4px; font-size: 11px;">EMQX Cloud Broker: <code style="font-family: var(--font-mono); color: var(--text-muted);">zadd17f0.ala.us-east-1.emqxsl.com</code> &middot; NodeMCU ESP8266</div>
+    </footer>
+  </main>
+
+  <!-- Broker Configuration Modal -->
+  <div id="settingsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="settingsModalTitle" style="font-size: 16px;">MQTT Broker Connection Settings</h2>
+        <button id="closeSettingsBtn" class="modal-close-btn" type="button" aria-label="Close settings dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="security-badge">
+        <strong>Privacy &amp; Security Note:</strong>
+        Credentials entered below are stored safely only in your browser's local storage (<code style="font-family: var(--font-mono);">localStorage</code>). They are never committed to Git or sent to Vercel. For safety, create a dedicated restricted user in EMQX Cloud with ACL for <code style="font-family: var(--font-mono);">miot/home01/#</code> topics only.
+      </div>
+
+      <form id="settingsForm">
+        <div class="form-group">
+          <label for="cfgHost">Broker Hostname</label>
+          <input type="text" id="cfgHost" spellcheck="false" required>
+          <div class="field-hint">EMQX Cloud server hostname (WSS endpoint)</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="cfgPort">WSS Port</label>
+            <input type="text" id="cfgPort" spellcheck="false" required>
+          </div>
+          <div class="form-group">
+            <label for="cfgPath">WSS Path</label>
+            <input type="text" id="cfgPath" spellcheck="false" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cfgUsername">MQTT Username</label>
+          <input type="text" id="cfgUsername" autocomplete="username" spellcheck="false" placeholder="e.g. dashboard_client" required>
+          <div class="field-hint">Use a dedicated user created in EMQX Cloud Authentication</div>
+        </div>
+
+        <div class="form-group">
+          <label for="cfgPassword">MQTT Password</label>
+          <div class="input-with-button">
+            <input type="password" id="cfgPassword" autocomplete="current-password" spellcheck="false" placeholder="Enter MQTT user password" required>
+            <button type="button" id="togglePasswordBtn" class="outline small" aria-label="Toggle password visibility">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <div class="field-hint">Password is stored only in this browser</div>
+        </div>
+
+        <div class="form-group">
+          <label for="cfgCmdTopic">Command Topic</label>
+          <input type="text" id="cfgCmdTopic" spellcheck="false" required>
+        </div>
+
+        <div class="form-group">
+          <label for="cfgStatusTopic">Status Topic</label>
+          <input type="text" id="cfgStatusTopic" spellcheck="false" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="resetDefaultsBtn" class="outline">Reset Defaults</button>
+          <button type="submit" class="success">Save &amp; Connect</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Local Vendor MQTT.js with CDN Fallback -->
+  <script src="vendor/mqtt.min.js"></script>
+  <script>
+    if (!window.mqtt) {
+      document.write('<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"><\/script>');
+    }
+  </script>
+
+  <!-- Application Configuration & Logic -->
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

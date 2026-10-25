@@ -1,0 +1,22 @@
+# Secrets and Credentials
+.env
+.env.local
+.env.*.local
+
+# Node & Package Managers
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel Deployment Metadata
+.vercel
+
+# Editor & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.bak

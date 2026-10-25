@@ -1,0 +1,20 @@
+{
+  "name": "miot-home-automation-dashboard",
+  "version": "1.0.0",
+  "description": "Industrial web dashboard for remote ESP8266 IoT control via EMQX Cloud MQTT over WebSockets",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve -l 3000",
+    "start": "npx serve -l 3000"
+  },
+  "keywords": [
+    "esp8266",
+    "mqtt",
+    "emqx",
+    "iot",
+    "home-automation",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT"
+}

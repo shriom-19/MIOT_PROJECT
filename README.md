@@ -1,31 +1,119 @@
-# MIOT Home Automation Web Dashboard
+# ⚡ MIOT Home Automation Web Dashboard
 
-A responsive, industrial-grade web dashboard for remote ESP8266 IoT telemetry and actuator control. Communicates with your NodeMCU anywhere in the world through **EMQX Cloud MQTT over Secure WebSockets (WSS)**.
+<div align="center">
+  <img src="https://img.shields.io/badge/ESP8266-NodeMCU-00C7B7?style=for-the-badge&logo=arduino&logoColor=white" alt="ESP8266" />
+  <img src="https://img.shields.io/badge/MQTT-EMQX%20Cloud-FF6B6B?style=for-the-badge" alt="MQTT" />
+  <img src="https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+  <img src="https://img.shields.io/badge/Status-Online%20Dashboard-34D399?style=for-the-badge" alt="Status" />
+</div>
 
----
+A responsive, industrial-grade web dashboard for remote ESP8266 IoT telemetry and actuator control. It connects your NodeMCU to the cloud through EMQX Cloud MQTT over Secure WebSockets, giving you live control over LEDs, lighting automation, and DC motor behavior from any browser.
 
-## Architecture Overview
-
-```
-[ Browser / Phone ]
-   |
-   | (WSS Port 8084 /mqtt)
-   v
-[ EMQX Cloud Broker ] <------------------ [ ESP8266 NodeMCU ]
-  zadd17f0.ala.us-east-1.emqxsl.com         (TLS Port 8883)
-   |                                            |
-   |-- Publishes: miot/home01/command --------> | (Receives & Acts)
-   |                                            |
-   |<-- Publishes: miot/home01/status --------- | (Periodic JSON)
-```
-
-> **Direct Cloud Control:** The hosted website controls your hardware remotely through the EMQX Cloud broker. It **never** calls local private IP addresses (such as `10.32.56.133`), meaning you can monitor and operate your devices from any Wi-Fi or mobile cellular network.
-
-> **Hardware Connections Page:** A dedicated wiring reference and schematics page is available directly in the site at `/connections` (`connections.html`), documenting pin mappings, LED configurations, LDR thresholds, and L298N motor driver wiring.
+> Smart, safe, and cloud-ready monitoring for a home automation prototype built around MQTT, real-time status telemetry, and remote control.
 
 ---
 
-## Hardware Pin Mapping Reference
+## 🌐 Live Architecture
+
+<div align="center">
+  <svg width="980" height="260" viewBox="0 0 980 260" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MIOT architecture diagram with animated data flow">
+    <defs>
+      <linearGradient id="connectGlow" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0%" stop-color="#7dd3fc"/>
+        <stop offset="50%" stop-color="#22d3ee"/>
+        <stop offset="100%" stop-color="#a78bfa"/>
+      </linearGradient>
+      <linearGradient id="nodeGlow" x1="0" x2="1" y1="0" y2="1">
+        <stop offset="0%" stop-color="#34d399"/>
+        <stop offset="100%" stop-color="#10b981"/>
+      </linearGradient>
+      <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <rect x="20" y="30" width="180" height="80" rx="18" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="110" y="68" text-anchor="middle" fill="#e2e8f0" font-size="20" font-family="Arial, sans-serif" font-weight="700">Browser</text>
+    <text x="110" y="92" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Arial, sans-serif">Phone / Laptop</text>
+
+    <rect x="390" y="30" width="200" height="80" rx="18" fill="#111827" stroke="#a78bfa" stroke-width="2"/>
+    <text x="490" y="68" text-anchor="middle" fill="#e2e8f0" font-size="20" font-family="Arial, sans-serif" font-weight="700">EMQX Cloud</text>
+    <text x="490" y="92" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Arial, sans-serif">MQTT Broker</text>
+
+    <rect x="720" y="30" width="220" height="80" rx="18" fill="#052e2b" stroke="#34d399" stroke-width="2"/>
+    <text x="830" y="68" text-anchor="middle" fill="#ecfeff" font-size="20" font-family="Arial, sans-serif" font-weight="700">ESP8266</text>
+    <text x="830" y="92" text-anchor="middle" fill="#bbf7d0" font-size="14" font-family="Arial, sans-serif">NodeMCU + Sensors</text>
+
+    <path d="M200 70 H390" stroke="url(#connectGlow)" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowHead)" filter="url(#softGlow)">
+      <animate attributeName="stroke-dasharray" values="0 1000; 1000 0; 0 1000" dur="2.2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M590 70 H720" stroke="url(#connectGlow)" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowHead)" filter="url(#softGlow)">
+      <animate attributeName="stroke-dasharray" values="0 1000; 1000 0; 0 1000" dur="2.2s" begin="0.6s" repeatCount="indefinite"/>
+    </path>
+
+    <defs>
+      <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#7dd3fc"/>
+      </marker>
+    </defs>
+
+    <circle cx="250" cy="170" r="18" fill="#22d3ee" opacity="0.9" filter="url(#softGlow)">
+      <animate attributeName="r" values="12;18;12" dur="1.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="490" cy="170" r="18" fill="#a78bfa" opacity="0.9" filter="url(#softGlow)">
+      <animate attributeName="r" values="12;18;12" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="820" cy="170" r="18" fill="#34d399" opacity="0.9" filter="url(#softGlow)">
+      <animate attributeName="r" values="12;18;12" dur="1.8s" begin="0.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.8s" repeatCount="indefinite"/>
+    </circle>
+
+    <path d="M250 140 L250 190" stroke="#67e8f9" stroke-width="3" stroke-linecap="round"/>
+    <path d="M490 140 L490 190" stroke="#c4b5fd" stroke-width="3" stroke-linecap="round"/>
+    <path d="M820 140 L820 190" stroke="#6ee7b7" stroke-width="3" stroke-linecap="round"/>
+
+    <text x="250" y="225" text-anchor="middle" fill="#e2e8f0" font-size="16" font-family="Arial, sans-serif">Command</text>
+    <text x="490" y="225" text-anchor="middle" fill="#e2e8f0" font-size="16" font-family="Arial, sans-serif">Broker</text>
+    <text x="820" y="225" text-anchor="middle" fill="#e2e8f0" font-size="16" font-family="Arial, sans-serif">Status</text>
+  </svg>
+</div>
+
+### 🔄 Communication flow
+
+```text
+[ Browser / Phone ] --WSS:8084--> [ EMQX Cloud Broker ] --MQTT/TLS:8883--> [ ESP8266 NodeMCU ]
+      |                                     |                                      |
+      |                                     |                                      +--> Built-in LED
+      |                                     |                                      +--> External LED
+      |                                     |                                      +--> LDR Sensor
+      |                                     |                                      +--> DC Motor
+      +-------------------------------------<------------------------------------<-- Status JSON stream
+```
+
+> Direct cloud control: the hosted dashboard communicates through EMQX Cloud and does not rely on any local private IP access.
+
+---
+
+## 🚀 Key Features
+
+| Feature | Description |
+| :--- | :--- |
+| 🔌 Remote control | Publish commands from the web dashboard to the broker and onto the ESP8266 |
+| 💡 Automated lighting | LDR-driven light and dark detection switches lighting automatically |
+| 🏎️ Motor control | Direction, start/stop, and PWM speed control via MQTT commands |
+| 📡 Real-time telemetry | Device state updates are streamed back to the dashboard in JSON |
+| ☁️ Cloud-first design | Browser dashboard runs on Vercel while the NodeMCU handles local hardware tasks |
+| 🛡️ Security-minded setup | Uses restricted MQTT credentials and avoids hardcoded secrets in public code |
+
+---
+
+## 🧩 Hardware Pin Mapping Reference
 
 | Function | Pin Name | Hardware / Module | Behavior / State |
 | :--- | :--- | :--- | :--- |
@@ -33,87 +121,45 @@ A responsive, industrial-grade web dashboard for remote ESP8266 IoT telemetry an
 | **External LED** | `D2` (`GPIO4`) | External LED circuit | **Active HIGH** (`HIGH` = ON, `LOW` = OFF) |
 | **LDR Sensor** | `D5` (`GPIO14`) | Digital Light Dependent Resistor | `HIGH` = **DARK**, `LOW` = **BRIGHT** |
 | **DC Motor PWM** | `D6` (`GPIO12`) | L298N Driver **ENA** | Speed range: `0` to `1023` |
-| **DC Motor IN1** | `D7` (`GPIO13`) | L298N Driver **IN1** | Direction Control |
-| **DC Motor IN2** | `D1` (`GPIO5`) | L298N Driver **IN2** | Direction Control |
+| **DC Motor IN1** | `D7` (`GPIO13)` | L298N Driver **IN1** | Direction control |
+| **DC Motor IN2** | `D1` (`GPIO5`) | L298N Driver **IN2** | Direction control |
 
-> **Safety Warning:** Ensure external DC motors use a dedicated battery or external power source with a **common ground** connected to the ESP8266 `GND`. Never power heavy DC motors directly from the ESP8266 3.3V pin.
-
----
-
-## Quick Start: Local Testing
-
-### Option A: Using Node.js (Recommended)
-From the project folder:
-```powershell
-npm run dev
-```
-or
-```powershell
-npx serve -l 3000
-```
-Then open your browser to [http://localhost:3000](http://localhost:3000).
-
-### Option B: Using Python
-If you have Python installed:
-```powershell
-python -m http.server 3000
-```
-Then open [http://localhost:3000](http://localhost:3000).
-
-### Option C: VS Code Live Server
-Right-click `index.html` in VS Code and select **Open with Live Server**.
+> ⚠️ Safety warning: ensure external DC motors use a dedicated battery or external power source with a common ground connected to the ESP8266 `GND`.
 
 ---
 
-## Configuring MQTT Credentials
+## ⚙️ MQTT Communication Reference
 
-For security, the project ships with placeholder credentials so real passwords are never accidentally checked into Git or deployed publicly.
+### Broker connection parameters
 
-### Method 1: Using the in-Dashboard Settings Dialog (Recommended)
-1. Open the dashboard in your browser.
-2. Click the **Settings** button in the top right header (or click **Configure Credentials** on the setup banner).
-3. Enter your dedicated EMQX username and password.
-4. Click **Save & Connect**.
-5. Your credentials are saved **only inside your browser's private `localStorage`** on that device. They are not stored in any code files.
-
-### Method 2: Editing `js/config.js` (For Private Local Use)
-Open `js/config.js` and edit the placeholders:
-```javascript
-username: "YOUR_EMQX_USERNAME",
-password: "YOUR_EMQX_PASSWORD",
-```
-
----
-
-## MQTT Communication Reference
-
-### Broker Connection Parameters
 - **Host:** `zadd17f0.ala.us-east-1.emqxsl.com`
 - **Protocol:** `WSS` (WebSocket Secure)
 - **Port:** `8084`
 - **Path:** `/mqtt`
 - **Client ID:** Unique randomized string (`miot-web-xxxxxxxx`)
 
-### MQTT Topics
-- **Command Topic (Publish):** `miot/home01/command`
-- **Status Topic (Subscribe):** `miot/home01/status`
+### MQTT topics
 
-### Actuator Commands (QoS 1, Retain: false)
+- **Command topic (publish):** `miot/home01/command`
+- **Status topic (subscribe):** `miot/home01/status`
+
+### Actuator commands
+
 | Command String | Description |
 | :--- | :--- |
-| `led/on` | Turns on both Built-in LED and External LED |
+| `led/on` | Turns on both built-in and external LEDs |
 | `led/off` | Turns off both LEDs |
-| `mode/auto` | Switches lighting to automatic (DARK => ON, BRIGHT => OFF) |
-| `mode/manual` | Disables automatic LDR lighting triggers |
-| `motor/on` | Starts the DC motor with current direction and speed |
-| `motor/off` | Stops the DC motor |
-| `motor/forward` | Sets motor rotation to forward |
-| `motor/reverse` | Sets motor rotation to reverse |
-| `motor/speed/<value>` | Sets PWM speed (e.g., `motor/speed/700`, value `0` to `1023`) |
-| `status/request` | Requests an immediate status report packet |
+| `mode/auto` | Switches to automatic mode |
+| `mode/manual` | Disables automatic LDR-based control |
+| `motor/on` | Starts the DC motor |
+| `motor/off` | Stops the motor |
+| `motor/forward` | Sets motor direction to forward |
+| `motor/reverse` | Sets motor direction to reverse |
+| `motor/speed/<value>` | Sets PWM speed (`0` to `1023`) |
+| `status/request` | Requests an immediate status packet |
 
-### Expected Status JSON Format
-The ESP8266 periodically publishes a JSON packet to `miot/home01/status`:
+### Example status payload
+
 ```json
 {
   "device": "ESP8266",
@@ -128,73 +174,146 @@ The ESP8266 periodically publishes a JSON packet to `miot/home01/status`:
   "speed": 700
 }
 ```
-*The dashboard defensively handles uppercase, lowercase, numeric (1/0), and boolean values.*
 
 ---
 
-## Security Best Practices & ACL Configuration
+## 🛠️ Quick Start
 
-### 1. Browser Security Reality
-Any credential embedded directly into public client-side JavaScript or HTML can be inspected and copied by any visitor using browser DevTools.
+### Option A: Local browser testing
 
-### 2. Creating a Dedicated Restricted EMQX User
-To protect your EMQX Cloud broker:
-1. Log in to your **EMQX Cloud Console**.
-2. Navigate to **Access Control** &rarr; **Authentication**.
-3. Create a **dedicated dashboard user** (e.g. `miot_dashboard_user`) with a strong password. Do **not** use the same credentials as your ESP8266 hardware or administrator account.
-4. Navigate to **Access Control** &rarr; **Authorization (ACL)**.
-5. Create an ACL policy rule for this dashboard user:
-   - **Publish:** Allow ONLY to topic `miot/home01/command`
-   - **Subscribe:** Allow ONLY to topic `miot/home01/status`
-   - **Deny** access to all other topics (e.g. `$SYS/#`, `#`).
+```powershell
+npm run dev
+```
 
-### 3. Production Deployment Architecture
-If you plan to publish this website publicly to family or colleagues:
-- Use a lightweight serverless backend or authentication proxy (such as a Next.js API route, Cloudflare Worker, or JWT-based EMQX authentication) that verifies authenticated users before granting short-lived temporary broker tokens.
+or
 
----
+```powershell
+npx serve -l 3000
+```
 
-## Deploying to Vercel
+Then open your browser to <http://localhost:3000>.
 
-The dashboard is structured as a pure static website at the root directory with no build step required.
+### Option B: Python server
 
-### Deploying via GitHub (Beginner Friendly)
-1. Initialize Git and commit the workspace:
-   ```powershell
-   git init
-   git add .
-   git commit -m "Initial MIOT Home Automation Dashboard"
-   ```
-2. Push your project to a **private** GitHub repository.
-3. Visit [vercel.com](https://vercel.com) and log in.
-4. Click **Add New Project** &rarr; **Import Git Repository**.
-5. Select your GitHub repository.
-6. Leave **Framework Preset** as **Other** and Build Command empty.
-7. Click **Deploy**.
-8. Once live, open your Vercel URL, click **Settings**, and enter your restricted EMQX username and password.
+```bash
+python -m http.server 3000
+```
 
-### Deploying via Vercel CLI
-1. Install Vercel CLI:
-   ```powershell
-   npm install -g vercel
-   ```
-2. In the project directory, run:
-   ```powershell
-   vercel
-   ```
-3. Follow the on-screen prompts to deploy.
+Then open <http://localhost:3000>.
+
+### Option C: VS Code Live Server
+
+Right-click `index.html` in VS Code and select **Open with Live Server**.
 
 ---
 
-## Verification & Troubleshooting Checklist
+## 🔐 Configuring MQTT Credentials
 
-| Symptom | Cause | Solution |
+For security, the project ships with placeholder credentials so real secrets are never accidentally committed or deployed publicly.
+
+### Recommended method: use the dashboard settings dialog
+
+1. Open the dashboard in your browser.
+2. Click **Settings**.
+3. Enter your EMQX username and password.
+4. Click **Save & Connect**.
+5. Credentials are stored only in the browser's private `localStorage`.
+
+### Private local configuration
+
+Open `js/config.js` and edit:
+
+```javascript
+username: "YOUR_EMQX_USERNAME",
+password: "YOUR_EMQX_PASSWORD",
+```
+
+---
+
+## 🧪 Verification and Troubleshooting
+
+| Symptom | Likely Cause | Suggested Fix |
 | :--- | :--- | :--- |
-| **"Credentials required" banner is visible** | Username or password has placeholder text | Click **Configure Credentials** in the banner or top-right **Settings** and enter your EMQX credentials. |
-| **"MQTT offline" or "Connection error"** | Incorrect WSS port, URL, or firewall blocking port 8084 | Verify that you are connecting to port `8084` with path `/mqtt`. Ensure corporate or school firewalls allow outgoing WSS traffic on port 8084. |
-| **"Publish failed: Not authorized"** | EMQX ACL is rejecting the publish action | In EMQX Cloud Console &rarr; Authorization, verify that your user has permission to publish to `miot/home01/command`. |
-| **MQTT connected, but Device Status says "Awaiting Status"** | ESP8266 is disconnected from Wi-Fi or broker | Check your ESP8266 Serial Monitor at 115200 baud. Verify Wi-Fi hotspot is running and connected to `zadd17f0.ala.us-east-1.emqxsl.com:8883`. |
-| **Motor does not spin when commanded** | Motor power supply or L298N driver wiring issue | Verify external power source to L298N VMS pin. Check that ESP8266 GND and battery GND are joined. Ensure PWM speed is set above the motor's stall threshold (> 400). |
-| **Malformed JSON in log** | Firmware Serial print or non-JSON output on status topic | Check ESP8266 firmware sketch to ensure only valid JSON formatted strings are published to `miot/home01/status`. |
-#   M I O T _ P R O J E C T  
- 
+| **Credentials required** banner | Placeholder values in browser storage | Re-enter valid MQTT credentials |
+| **MQTT offline / connection error** | Wrong WSS port or firewall issue | Verify port `8084` and `/mqtt` path |
+| **Publish failed: Not authorized** | ACL is blocking command topic | Confirm ACL allows `miot/home01/command` |
+| **Status stays “Awaiting Status”** | ESP8266 is disconnected from Wi-Fi or broker | Check serial logs and network connectivity |
+| **Motor does not spin** | Motor supply or ground issue | Verify shared ground and L298N power input |
+| **Malformed JSON in log** | Firmware prints non-JSON text | Ensure only valid JSON is published |
+
+---
+
+## 🧱 Project Structure
+
+```text
+MIOT_PROJECT/
+├── index.html
+├── css/
+│   └── style.css
+├── js/
+│   ├── app.js
+│   ├── config.js
+│   └── mqtt.js
+├── assets/
+│   └── images/
+├── README.md
+├── .gitignore
+└── package.json
+```
+
+> The exact project layout may vary, but the core idea remains the same: a browser-based control dashboard connected to EMQX over WebSockets.
+
+---
+
+## 🚢 Deploying to Vercel
+
+The dashboard is structured as a static website, which makes Vercel deployment simple.
+
+### Beginner-friendly steps
+
+1. Push the project to a private GitHub repository.
+2. Open [vercel.com](https://vercel.com).
+3. Select **Add New Project** > **Import Git Repository**.
+4. Choose your repository.
+5. Leave the framework setting as **Other** and keep the build command empty.
+6. Click **Deploy**.
+7. Open the deployment URL and configure MQTT credentials in the dashboard.
+
+---
+
+## 🧯 Security Best Practices
+
+- Keep MQTT credentials out of public source code.
+- Use a dedicated broker account for the dashboard.
+- Restrict publish permissions to `miot/home01/command`.
+- Restrict subscribe permissions to `miot/home01/status`.
+- Avoid putting admin credentials into browser-side JavaScript.
+- Prefer a backend or short-lived auth flow for public deployments.
+
+---
+
+## 🧠 Why this project matters
+
+This system demonstrates how a browser UI can safely and cleanly control hardware through MQTT. It combines cloud messaging, hardware automation, and real-time telemetry into a practical, teachable IoT application using ESP8266 and EMQX Cloud.
+
+---
+
+## 📜 License
+
+Add the project's chosen license here before distributing the source code publicly.
+
+---
+
+## 👨‍💻 Author
+
+**Project:** MIOT Home Automation System  
+**Controller:** ESP8266 NodeMCU  
+**Messaging:** MQTT with EMQX Cloud  
+**Dashboard:** Web-based interface hosted on Vercel
+
+---
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Designed%20for-IoT%20Automation-8B5CF6?style=for-the-badge" alt="Design" />
+  <img src="https://img.shields.io/badge/Cloud%20Control-Remote%20MQTT-06B6D4?style=for-the-badge" alt="Cloud Control" />
+</div>

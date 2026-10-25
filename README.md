@@ -194,3 +194,5 @@ The dashboard is structured as a pure static website at the root directory with 
 | **MQTT connected, but Device Status says "Awaiting Status"** | ESP8266 is disconnected from Wi-Fi or broker | Check your ESP8266 Serial Monitor at 115200 baud. Verify Wi-Fi hotspot is running and connected to `zadd17f0.ala.us-east-1.emqxsl.com:8883`. |
 | **Motor does not spin when commanded** | Motor power supply or L298N driver wiring issue | Verify external power source to L298N VMS pin. Check that ESP8266 GND and battery GND are joined. Ensure PWM speed is set above the motor's stall threshold (> 400). |
 | **Malformed JSON in log** | Firmware Serial print or non-JSON output on status topic | Check ESP8266 firmware sketch to ensure only valid JSON formatted strings are published to `miot/home01/status`. |
+#   M I O T _ P R O J E C T  
+ 

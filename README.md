@@ -21,6 +21,8 @@ A responsive, industrial-grade web dashboard for remote ESP8266 IoT telemetry an
 
 > **Direct Cloud Control:** The hosted website controls your hardware remotely through the EMQX Cloud broker. It **never** calls local private IP addresses (such as `10.32.56.133`), meaning you can monitor and operate your devices from any Wi-Fi or mobile cellular network.
 
+> **Hardware Connections Page:** A dedicated wiring reference and schematics page is available directly in the site at `/connections` (`connections.html`), documenting pin mappings, LED configurations, LDR thresholds, and L298N motor driver wiring.
+
 ---
 
 ## Hardware Pin Mapping Reference

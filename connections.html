@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070d18">
+  <meta name="description" content="Complete hardware wiring reference for the MIOT Home Automation system, including the ESP8266 NodeMCU, LEDs, LDR sensor, L298N motor driver, DC motor, and power supply.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23101c30'/%3E%3Ccircle cx='12' cy='12' r='5' fill='%233b82f6'/%3E%3C/svg%3E">
+  <title>MIOT | Hardware Connections</title>
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="shell">
+    <!-- Top Header & Brand -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <!-- Circuit / Wiring SVG Icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="4"></rect>
+            <path d="M7 2v20M17 2v20M2 12h20M2 7h5M17 7h5M2 17h5M17 17h5"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>Hardware Connections</h1>
+          <p class="subtitle">Complete hardware wiring reference for the MIOT Home Automation system, including the ESP8266 NodeMCU, LEDs, LDR sensor, L298N motor driver, DC motor, and power supply.</p>
+        </div>
+      </div>
+
+      <!-- Navigation Bar -->
+      <nav class="site-nav" aria-label="Main Navigation">
+        <a href="index.html" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="connections.html" class="nav-link active" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+            <circle cx="6" cy="6" r="3"></circle>
+            <circle cx="18" cy="18" r="3"></circle>
+            <circle cx="18" cy="6" r="3"></circle>
+            <circle cx="6" cy="18" r="3"></circle>
+          </svg>
+          Connections
+        </a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="index.html" class="outline small button-link" title="Return to interactive control dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Back to Dashboard
+        </a>
+      </div>
+    </header>
+
+    <div class="connections-layout">
+
+      <!-- Physical Connection Diagram Card -->
+      <article class="card diagram-card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h2>Hardware Connection Diagram</h2>
+              <p class="card-description">System schematic and physical module wiring illustration.</p>
+            </div>
+          </div>
+          <span class="pill info">Schematic Reference</span>
+        </div>
+
+        <div class="diagram-img-wrap">
+          <img src="assets/hardware-connection-diagram.jpg" alt="MIOT Home Automation Hardware Connection Diagram showing ESP8266 NodeMCU, LDR sensor, LED with resistor, L298N motor driver, DC motor, and power supply" loading="lazy">
+        </div>
+        <div class="diagram-caption">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          Wiring reference illustrating connections between the NodeMCU ESP8266, LDR sensor, LED, L298N driver, DC motor, and external 5V power supply.
+        </div>
+      </article>
+
+      <!-- Section A: ESP8266 NodeMCU Pin Mapping (Full Width) -->
+      <article class="card section-full">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"></path>
+              </svg>
+            </div>
+            <div>
+              <h2>Section A: ESP8266 NodeMCU Pin Mapping</h2>
+              <p class="card-description">Primary micro-controller pinout and hardware module associations.</p>
+            </div>
+          </div>
+          <span class="pill good">10 Pin Allocations</span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table" aria-label="ESP8266 NodeMCU Pin Mapping Table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 50px;">No.</th>
+                <th scope="col">Component</th>
+                <th scope="col">Component Pin</th>
+                <th scope="col">NodeMCU Pin</th>
+                <th scope="col">Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Built-in LED</td>
+                <td>Built-in</td>
+                <td><span class="pin-badge">LED_BUILTIN</span></td>
+                <td>Built-in LED control</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>External LED</td>
+                <td>Anode through resistor</td>
+                <td><span class="pin-badge">D2 (GPIO4)</span></td>
+                <td>External LED control</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>External LED</td>
+                <td>Cathode</td>
+                <td><span class="pin-badge gnd">GND</span></td>
+                <td>Ground</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>LDR module</td>
+                <td>DO</td>
+                <td><span class="pin-badge">D5 (GPIO14)</span></td>
+                <td>Digital light detection</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>LDR module</td>
+                <td>VCC</td>
+                <td><span class="pin-badge pwr">3V3</span></td>
+                <td>Sensor power</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>LDR module</td>
+                <td>GND</td>
+                <td><span class="pin-badge gnd">GND</span></td>
+                <td>Ground</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>L298N motor driver</td>
+                <td>ENA</td>
+                <td><span class="pin-badge">D6 (GPIO12)</span></td>
+                <td>PWM speed control</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>L298N motor driver</td>
+                <td>IN1</td>
+                <td><span class="pin-badge">D7 (GPIO13)</span></td>
+                <td>Motor direction</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>L298N motor driver</td>
+                <td>IN2</td>
+                <td><span class="pin-badge">D1 (GPIO5)</span></td>
+                <td>Motor direction</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>L298N motor driver</td>
+                <td>GND</td>
+                <td><span class="pin-badge gnd">GND</span></td>
+                <td>Common ground</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- Section B & C: Built-in LED and External LED Grid (2 Columns) -->
+      <div class="layout">
+        <!-- Section B: Built-in LED -->
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a6 6 0 0 0-6 6c0 2.97 1.8 5.43 4.4 6.32V18a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2v-3.68C16.2 13.43 18 10.97 18 8a6 6 0 0 0-6-6Z"></path>
+                  <path d="M9 22h6"></path>
+                </svg>
+              </div>
+              <div>
+                <h2>Section B: Built-in LED</h2>
+                <p class="card-description">On-board surface mount LED specifications.</p>
+              </div>
+            </div>
+            <span class="pill">Active LOW</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table" aria-label="Built-in LED Specifications">
+              <thead>
+                <tr>
+                  <th scope="col">Property</th>
+                  <th scope="col">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Hardware</td>
+                  <td>LED integrated into the NodeMCU board</td>
+                </tr>
+                <tr>
+                  <td>Firmware pin</td>
+                  <td><span class="pin-badge">LED_BUILTIN</span></td>
+                </tr>
+                <tr>
+                  <td>Logic</td>
+                  <td><strong>Active LOW</strong></td>
+                </tr>
+                <tr>
+                  <td>LOW</td>
+                  <td><span class="state-badge low">LED ON</span></td>
+                </tr>
+                <tr>
+                  <td>HIGH</td>
+                  <td><span class="state-badge high">LED OFF</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- Section C: External LED -->
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                </svg>
+              </div>
+              <div>
+                <h2>Section C: External LED</h2>
+                <p class="card-description">External indicator wiring on pin D2.</p>
+              </div>
+            </div>
+            <span class="pill good">Active HIGH</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table" aria-label="External LED Wiring">
+              <thead>
+                <tr>
+                  <th scope="col">LED Terminal</th>
+                  <th scope="col">Connection</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Anode (+)</td>
+                  <td>Connect to <span class="pin-badge">D2 (GPIO4)</span> through a 220–330 Ω resistor</td>
+                </tr>
+                <tr>
+                  <td>Cathode (−)</td>
+                  <td>Connect to <span class="pin-badge gnd">GND</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table" aria-label="External LED Logic">
+              <thead>
+                <tr>
+                  <th scope="col">D2 Output</th>
+                  <th scope="col">LED State</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>HIGH</td>
+                  <td><span class="state-badge high">ON</span></td>
+                </tr>
+                <tr>
+                  <td>LOW</td>
+                  <td><span class="state-badge low">OFF</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+
+      <!-- Section D: LDR Sensor Module (Full Width) -->
+      <article class="card section-full">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+            </div>
+            <div>
+              <h2>Section D: LDR Sensor Module</h2>
+              <p class="card-description">Ambient light sensor pin connections and automated threshold behavior.</p>
+            </div>
+          </div>
+          <span class="pill info">Digital DO on D5</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+          <div>
+            <div class="table-wrap">
+              <table class="data-table" aria-label="LDR Pin Connections">
+                <thead>
+                  <tr>
+                    <th scope="col">LDR Pin</th>
+                    <th scope="col">NodeMCU Connection</th>
+                    <th scope="col">Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>VCC</td>
+                    <td><span class="pin-badge pwr">3V3</span></td>
+                    <td>Power</td>
+                  </tr>
+                  <tr>
+                    <td>GND</td>
+                    <td><span class="pin-badge gnd">GND</span></td>
+                    <td>Ground</td>
+                  </tr>
+                  <tr>
+                    <td>DO</td>
+                    <td><span class="pin-badge">D5 (GPIO14)</span></td>
+                    <td>Digital light detection</td>
+                  </tr>
+                  <tr>
+                    <td>AO</td>
+                    <td><em>Not connected</em></td>
+                    <td>Not used by the current firmware</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <div class="table-wrap">
+              <table class="data-table" aria-label="LDR Operational Logic">
+                <thead>
+                  <tr>
+                    <th scope="col">D5 Reading</th>
+                    <th scope="col">Detected Condition</th>
+                    <th scope="col">Automatic LED Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>HIGH</td>
+                    <td><span class="state-badge low">DARK</span></td>
+                    <td>LEDs ON</td>
+                  </tr>
+                  <tr>
+                    <td>LOW</td>
+                    <td><span class="state-badge high">BRIGHT</span></td>
+                    <td>LEDs OFF</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-note">
+          <strong>Note:</strong> The current firmware expects HIGH to indicate darkness and LOW to indicate brightness. Actual behavior depends on the LDR module's comparator configuration and should be verified against the physical sensor.
+        </div>
+      </article>
+
+      <!-- Section E: L298N Motor Driver (Full Width) -->
+      <article class="card section-full">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="3"></rect>
+                <circle cx="12" cy="12" r="5"></circle>
+              </svg>
+            </div>
+            <div>
+              <h2>Section E: L298N Motor Driver</h2>
+              <p class="card-description">Dual H-bridge controller pinout for DC motor control.</p>
+            </div>
+          </div>
+          <span class="pill good">H-Bridge Driver</span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table" aria-label="L298N Motor Driver Connections">
+            <thead>
+              <tr>
+                <th scope="col">L298N Pin</th>
+                <th scope="col">NodeMCU Pin</th>
+                <th scope="col">Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ENA</td>
+                <td><span class="pin-badge">D6 (GPIO12)</span></td>
+                <td>PWM motor speed control</td>
+              </tr>
+              <tr>
+                <td>IN1</td>
+                <td><span class="pin-badge">D7 (GPIO13)</span></td>
+                <td>Motor direction control</td>
+              </tr>
+              <tr>
+                <td>IN2</td>
+                <td><span class="pin-badge">D1 (GPIO5)</span></td>
+                <td>Motor direction control</td>
+              </tr>
+              <tr>
+                <td>GND</td>
+                <td><span class="pin-badge gnd">GND</span></td>
+                <td>Common ground</td>
+              </tr>
+              <tr>
+                <td>OUT1</td>
+                <td>DC motor terminal 1</td>
+                <td>Motor output</td>
+              </tr>
+              <tr>
+                <td>OUT2</td>
+                <td>DC motor terminal 2</td>
+                <td>Motor output</td>
+              </tr>
+              <tr>
+                <td>Motor supply input</td>
+                <td>External motor supply (+)</td>
+                <td>Motor power</td>
+              </tr>
+              <tr>
+                <td>GND / supply negative</td>
+                <td>External supply (−)</td>
+                <td>Power return</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-note">
+          <strong>Note:</strong> If the L298N module has an ENA jumper, verify its configuration. Remove it if required for PWM speed control through D6. Check the module's documentation before connecting power.
+        </div>
+      </article>
+
+      <!-- Section F & G: Direction Control and Speed Reference Grid (2 Columns) -->
+      <div class="layout">
+        <!-- Section F: Motor Direction Control -->
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="13 17 18 12 13 7"></polyline>
+                  <polyline points="6 17 11 12 6 7"></polyline>
+                </svg>
+              </div>
+              <div>
+                <h2>Section F: Motor Direction Control</h2>
+                <p class="card-description">Logic truth table for H-bridge direction switching.</p>
+              </div>
+            </div>
+            <span class="pill">H-Bridge Logic</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table" aria-label="Motor Direction Control Truth Table">
+              <thead>
+                <tr>
+                  <th scope="col">IN1</th>
+                  <th scope="col">IN2</th>
+                  <th scope="col">Expected Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>HIGH</td>
+                  <td>LOW</td>
+                  <td><span class="state-badge high">Forward</span></td>
+                </tr>
+                <tr>
+                  <td>LOW</td>
+                  <td>HIGH</td>
+                  <td><span class="state-badge low">Reverse</span></td>
+                </tr>
+                <tr>
+                  <td>LOW</td>
+                  <td>LOW</td>
+                  <td>Stop/coast, depending on driver state</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-note">
+            <strong>Note:</strong> The physical forward direction depends on the motor wiring and installation orientation.
+          </div>
+        </article>
+
+        <!-- Section G: Motor Speed Reference -->
+        <article class="card">
+          <div class="card-head">
+            <div class="card-title-group">
+              <div class="card-badge-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                  <circle cx="12" cy="12" r="4"></circle>
+                </svg>
+              </div>
+              <div>
+                <h2>Section G: Motor Speed Reference</h2>
+                <p class="card-description">The existing firmware uses PWM values from 0 to 1023.</p>
+              </div>
+            </div>
+            <span class="pill info">10-bit PWM</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table" aria-label="Motor Speed PWM Level Reference">
+              <thead>
+                <tr>
+                  <th scope="col">PWM Value</th>
+                  <th scope="col">Intended Speed Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="pin-badge">0</span></td>
+                  <td>Stopped</td>
+                </tr>
+                <tr>
+                  <td><span class="pin-badge">256</span></td>
+                  <td>Low</td>
+                </tr>
+                <tr>
+                  <td><span class="pin-badge">512</span></td>
+                  <td>Medium</td>
+                </tr>
+                <tr>
+                  <td><span class="pin-badge">768</span></td>
+                  <td>High</td>
+                </tr>
+                <tr>
+                  <td><span class="pin-badge">1023</span></td>
+                  <td>Maximum commanded speed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-note">
+            <strong>Note:</strong> These are illustrative PWM levels, not measured motor speeds. Actual speed depends on the motor, load, supply voltage, and motor driver.
+          </div>
+        </article>
+      </div>
+
+      <!-- Section H: Power Supply Connections & Prominent Safety Notice (Full Width) -->
+      <article class="card section-full">
+        <div class="card-head">
+          <div class="card-title-group">
+            <div class="card-badge-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <div>
+              <h2>Section H: Power Supply Connections</h2>
+              <p class="card-description">System voltage distribution and essential ground referencing.</p>
+            </div>
+          </div>
+          <span class="pill warn">Common Ground Required</span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table" aria-label="Power Supply Distribution Table">
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Purpose / Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>NodeMCU 3V3</td>
+                <td>LDR VCC</td>
+                <td>Sensor power, if compatible</td>
+              </tr>
+              <tr>
+                <td>NodeMCU GND</td>
+                <td>LDR GND</td>
+                <td>Sensor ground</td>
+              </tr>
+              <tr>
+                <td>NodeMCU GND</td>
+                <td>L298N GND</td>
+                <td>Common ground</td>
+              </tr>
+              <tr>
+                <td>External motor supply (+)</td>
+                <td>L298N motor supply input</td>
+                <td>Motor power</td>
+              </tr>
+              <tr>
+                <td>External motor supply (−)</td>
+                <td>L298N GND</td>
+                <td>Power return and common ground</td>
+              </tr>
+              <tr>
+                <td>L298N OUT1 and OUT2</td>
+                <td>DC motor terminals</td>
+                <td>Motor output</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Prominent Safety Notice -->
+        <div class="safety-callout" role="alert">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            Electrical Safety and Hardware Protection Rules
+          </h3>
+          <ul>
+            <li>Never connect a DC motor directly to an ESP8266 GPIO.</li>
+            <li>Never apply 5 V directly to an ESP8266 GPIO.</li>
+            <li>Select a motor supply compatible with the motor and L298N module.</li>
+            <li>Check motor voltage, stall current, driver limits, and power-supply polarity before powering the circuit.</li>
+            <li>Use a suitable current-limiting resistor with the external LED.</li>
+            <li>Ensure the ESP8266 and L298N share a common ground.</li>
+            <li>Disconnect power before changing wiring.</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div>MIOT Home Automation &middot; Hardware Connection &amp; Wiring Reference</div>
+      <div style="margin-top: 4px; font-size: 11px;">NodeMCU ESP8266 &middot; L298N Motor Driver &middot; LDR Light Sensor &middot; Dual LED Setup</div>
+    </footer>
+  </main>
+</body>
+</html>

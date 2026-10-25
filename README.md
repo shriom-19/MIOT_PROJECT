@@ -7,93 +7,9 @@
   <img src="https://img.shields.io/badge/Status-Online%20Dashboard-34D399?style=for-the-badge" alt="Status" />
 </div>
 
-A responsive, industrial-grade web dashboard for remote ESP8266 IoT telemetry and actuator control. It connects your NodeMCU to the cloud through EMQX Cloud MQTT over Secure WebSockets, giving you live control from anywhere.
+A responsive, industrial-grade web dashboard for remote ESP8266 IoT telemetry and actuator control. It connects your NodeMCU to the cloud through EMQX Cloud MQTT over Secure WebSockets, giving you a reliable way to monitor home devices, trigger outputs, and inspect live telemetry from anywhere.
 
 > Smart, safe, and cloud-ready monitoring for a home automation prototype built around MQTT, real-time status telemetry, and remote control.
-
----
-
-## 🌐 Live Architecture
-
-<div align="center">
-  <svg width="980" height="260" viewBox="0 0 980 260" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MIOT architecture diagram with animated MQTT data flow">
-    <defs>
-      <linearGradient id="connectGlow" x1="0" x2="1" y1="0" y2="0">
-        <stop offset="0%" stop-color="#7dd3fc" />
-        <stop offset="50%" stop-color="#22d3ee" />
-        <stop offset="100%" stop-color="#a78bfa" />
-      </linearGradient>
-      <linearGradient id="nodeGlow" x1="0" x2="1" y1="0" y2="1">
-        <stop offset="0%" stop-color="#34d399" />
-        <stop offset="100%" stop-color="#10b981" />
-      </linearGradient>
-      <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="4" result="blur" />
-        <feMerge>
-          <feMergeNode in="blur" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
-      </filter>
-      <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L9,3 z" fill="#7dd3fc" />
-      </marker>
-    </defs>
-
-    <rect x="20" y="40" width="180" height="90" rx="18" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
-    <text x="110" y="78" text-anchor="middle" fill="#e2e8f0" font-size="20" font-family="Arial, sans-serif" font-weight="700">Browser</text>
-    <text x="110" y="103" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Arial, sans-serif">Phone / Laptop</text>
-
-    <rect x="390" y="40" width="200" height="90" rx="18" fill="#111827" stroke="#a78bfa" stroke-width="2"/>
-    <text x="490" y="78" text-anchor="middle" fill="#e2e8f0" font-size="20" font-family="Arial, sans-serif" font-weight="700">EMQX Cloud</text>
-    <text x="490" y="103" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Arial, sans-serif">MQTT Broker</text>
-
-    <rect x="720" y="40" width="220" height="90" rx="18" fill="#052e2b" stroke="#34d399" stroke-width="2"/>
-    <text x="830" y="78" text-anchor="middle" fill="#ecfeff" font-size="20" font-family="Arial, sans-serif" font-weight="700">ESP8266</text>
-    <text x="830" y="103" text-anchor="middle" fill="#bbf7d0" font-size="14" font-family="Arial, sans-serif">NodeMCU + Sensors</text>
-
-    <path d="M200 85 H390" stroke="url(#connectGlow)" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowHead)" filter="url(#softGlow)">
-      <animate attributeName="stroke-dasharray" values="0 1000;1000 0;0 1000" dur="2.2s" repeatCount="indefinite"/>
-    </path>
-    <path d="M590 85 H720" stroke="url(#connectGlow)" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowHead)" filter="url(#softGlow)">
-      <animate attributeName="stroke-dasharray" values="0 1000;1000 0;0 1000" dur="2.2s" begin="0.6s" repeatCount="indefinite"/>
-    </path>
-
-    <circle cx="250" cy="170" r="18" fill="#22d3ee" opacity="0.9" filter="url(#softGlow)">
-      <animate attributeName="r" values="12;18;12" dur="1.8s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="490" cy="170" r="18" fill="#a78bfa" opacity="0.9" filter="url(#softGlow)">
-      <animate attributeName="r" values="12;18;12" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.4s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="820" cy="170" r="18" fill="#34d399" opacity="0.9" filter="url(#softGlow)">
-      <animate attributeName="r" values="12;18;12" dur="1.8s" begin="0.8s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.8s" repeatCount="indefinite"/>
-    </circle>
-
-    <path d="M250 140 L250 190" stroke="#67e8f9" stroke-width="3" stroke-linecap="round"/>
-    <path d="M490 140 L490 190" stroke="#c4b5fd" stroke-width="3" stroke-linecap="round"/>
-    <path d="M820 140 L820 190" stroke="#6ee7b7" stroke-width="3" stroke-linecap="round"/>
-
-    <text x="250" y="225" text-anchor="middle" fill="#e2e8f0" font-size="16" font-family="Arial, sans-serif">Command</text>
-    <text x="490" y="225" text-anchor="middle" fill="#e2e8f0" font-size="16" font-family="Arial, sans-serif">Broker</text>
-    <text x="820" y="225" text-anchor="middle" fill="#e2e8f0" font-size="16" font-family="Arial, sans-serif">Status</text>
-  </svg>
-</div>
-
-### 🔄 Communication flow
-
-```text
-[ Browser / Phone ] --WSS:8084--> [ EMQX Cloud Broker ] --MQTT/TLS:8883--> [ ESP8266 NodeMCU ]
-      |                                     |                                      |
-      |                                     |                                      +--> Built-in LED
-      |                                     |                                      +--> External LED
-      |                                     |                                      +--> LDR Sensor
-      |                                     |                                      +--> DC Motor
-      +-------------------------------------<------------------------------------<-- Status JSON stream
-```
-
-> Direct cloud control: the hosted dashboard communicates through EMQX Cloud and does not rely on any local private IP access.
 
 ---
 
@@ -291,7 +207,7 @@ The dashboard is structured as a static website, which makes Vercel deployment s
 
 ## 🧠 Why this project matters
 
-This system demonstrates how a browser UI can safely and cleanly control hardware through MQTT. It combines cloud messaging, hardware automation, and real-time telemetry into a practical, teachable IoT prototype for home automation.
+This system demonstrates how a browser UI can safely and cleanly control hardware through MQTT. It combines cloud messaging, hardware automation, and real-time telemetry into a practical, teachable prototype for smart home and IoT experimentation.
 
 ---
 
@@ -314,4 +230,3 @@ Add the project's chosen license here before distributing the source code public
   <img src="https://img.shields.io/badge/Designed%20for-IoT%20Automation-8B5CF6?style=for-the-badge" alt="Design" />
   <img src="https://img.shields.io/badge/Cloud%20Control-Remote%20MQTT-06B6D4?style=for-the-badge" alt="Cloud Control" />
 </div>
-
